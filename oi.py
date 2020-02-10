@@ -66,7 +66,7 @@ for price in (curr_price-100,curr_price,curr_price+100):
     
 conSum.to_csv(fname+':summary.csv',header=True)
 
-
+pivtable = pd.pivot_table(conSum,values=['netHedge'],index=['Expiry'], columns=['Price'], aggfunc=np.sum)
 
 def greek_string(deets, iv):
     #array deets needs [underlyingPrice, strikePrice, interestRate, daysToExpiration]
