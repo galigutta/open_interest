@@ -19,9 +19,9 @@ out_dir = 'snapshot'
 url = 'https://marketdata.theocc.com/series-search?symbolType=U&symbol=TSLA'
 fname = os.path.join(out_dir,date.today().strftime("%Y-%m-%d"))
 
-curr_price=748.0
+curr_price=770.0
 flatvol=85.5
-delta = 50
+delta = 100
 
 rate=2.0
 conSum = pd.DataFrame()
@@ -32,20 +32,21 @@ def greek_string(deets, iv):
     return([c.callPrice,c.putPrice,c.callDelta,c.putDelta,c.callDelta2,c.putDelta2,
             c.callTheta,c.putTheta,c.callRho,c.putRho,c.vega,c.gamma])
 
-print ('price, vol, delta:', str(sys.argv))
 try:
     curr_price=float(sys.argv[1])
     flatvol=float(sys.argv[2])
     delta = float(sys.argv[3])
 except:
-    print('usage: python oi.py price volatility step')
+    if len(sys.argv)>1:
+        print('usage: python oi.py price volatility step')
 
 if os.path.isfile(fname):
-    print ("File exists")
+    print ("Open interest file exists, skipping download")
 else:
+    print ("Downloading open interest file")
     wget.download(url,out=fname)
 
-
+print ('Using '+str(curr_price)+' price, '+str(flatvol)+' imp vol, '+str(delta)+' point move:')
 #Data wragling to clean up the raw file    
 df = pd.read_csv(fname, sep='\\t', engine='python',skiprows = 6)
 df.drop(columns=['ProductSymbol','C/P','Position Limit'],inplace=True)
@@ -89,8 +90,8 @@ conSum.to_csv(fname+':summary.csv',header=True)
 pivtable = pd.pivot_table(conSum,values=['netHedge'],index=['Expiry'], columns=['Price'], aggfunc=np.sum)
 
 print('Hedge impact from a '+str(delta)+' point move')
-print("Down:"+"{:,d}".format(int(pivtable.sum(axis=0)[0]-pivtable.sum(axis=0)[1])))
-print("Up  :"+"{:,d}".format(int(pivtable.sum(axis=0)[2]-pivtable.sum(axis=0)[1])))
+print("Down: "+"{:,d}".format(int(pivtable.sum(axis=0)[0]-pivtable.sum(axis=0)[1])))
+print("Up  :  "+"{:,d}".format(int(pivtable.sum(axis=0)[2]-pivtable.sum(axis=0)[1])))
 
-
-print(pivtable)
+#uncomment below to see data by expiry
+#print(pivtable)
