@@ -60,7 +60,8 @@ for price in (curr_price-100,curr_price,curr_price+100):
     result['callHedge']=result['Call']*result['callDelta']*100
     result['putHedge']=result['Put']*result['putDelta']*100
     result['netHedge']=result['callHedge']+result['putHedge']
-    print(result[['Expiry','callHedge','putHedge','netHedge']].groupby('Expiry').sum())
+    sumByExpiry=result[['Expiry','callHedge','putHedge','netHedge']].groupby('Expiry').sum()
+    sumByExpiry.to_csv(fname+':'+str(price),header=True)
 
 
 
