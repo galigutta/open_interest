@@ -34,9 +34,9 @@ def greek_string(deets, iv):
 
 print ('price, vol, delta:', str(sys.argv))
 try:
-    curr_price=sys.argv[1]
-    flatvol=sys.argv[2]
-    delta = sys.argv[3]
+    curr_price=float(sys.argv[1])
+    flatvol=float(sys.argv[2])
+    delta = float(sys.argv[3])
 except:
     print('usage: python oi.py price volatility step')
 
