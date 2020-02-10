@@ -7,18 +7,38 @@ Created on Sun Feb  9 21:27:19 2020
 """
 
 import pandas as pd
-import wget
+import numpy as np
+import wget, sys
 from datetime import date,datetime
 import os.path
 import mibian
+import warnings
+warnings.filterwarnings("ignore")
 
 out_dir = 'snapshot'
 url = 'https://marketdata.theocc.com/series-search?symbolType=U&symbol=TSLA'
 fname = os.path.join(out_dir,date.today().strftime("%Y-%m-%d"))
+
+curr_price=748.0
 flatvol=85.5
-curr_price=748
-conSum = pd.DataFrame()
+delta = 50
+
 rate=2.0
+conSum = pd.DataFrame()
+
+def greek_string(deets, iv):
+    #array deets needs [underlyingPrice, strikePrice, interestRate, daysToExpiration]
+    c=mibian.BS(deets,iv)
+    return([c.callPrice,c.putPrice,c.callDelta,c.putDelta,c.callDelta2,c.putDelta2,
+            c.callTheta,c.putTheta,c.callRho,c.putRho,c.vega,c.gamma])
+
+print ('price, vol, delta:', str(sys.argv))
+try:
+    curr_price=sys.argv[1]
+    flatvol=sys.argv[2]
+    delta = sys.argv[3]
+except:
+    print('usage: python oi.py price volatility step')
 
 if os.path.isfile(fname):
     print ("File exists")
@@ -47,7 +67,7 @@ df=df[df['Expiry']>=datetime.today()]
 df['DTE'] = df['Expiry']-datetime(datetime.today().year,datetime.today().month,datetime.today().day)
 df['DTE'] = df['DTE'].dt.days 
 
-for price in (curr_price-100,curr_price,curr_price+100):
+for price in (curr_price-delta,curr_price,curr_price+delta):
     #get all model prices and greeks
     df['Greeks']=df.apply(lambda  x:greek_string([price,x['Strike'],rate,x['DTE']],flatvol), axis=1)
     
@@ -68,8 +88,9 @@ conSum.to_csv(fname+':summary.csv',header=True)
 
 pivtable = pd.pivot_table(conSum,values=['netHedge'],index=['Expiry'], columns=['Price'], aggfunc=np.sum)
 
-def greek_string(deets, iv):
-    #array deets needs [underlyingPrice, strikePrice, interestRate, daysToExpiration]
-    c=mibian.BS(deets,iv)
-    return([c.callPrice,c.putPrice,c.callDelta,c.putDelta,c.callDelta2,c.putDelta2,
-            c.callTheta,c.putTheta,c.callRho,c.putRho,c.vega,c.gamma])
+print('Hedge impact from a '+str(delta)+' point move')
+print("Down:"+"{:,d}".format(int(pivtable.sum(axis=0)[0]-pivtable.sum(axis=0)[1])))
+print("Up  :"+"{:,d}".format(int(pivtable.sum(axis=0)[2]-pivtable.sum(axis=0)[1])))
+
+
+print(pivtable)
