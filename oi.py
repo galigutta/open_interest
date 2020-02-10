@@ -17,7 +17,7 @@ url = 'https://marketdata.theocc.com/series-search?symbolType=U&symbol=TSLA'
 fname = os.path.join(out_dir,date.today().strftime("%Y-%m-%d"))
 flatvol=85.5
 curr_price=748
-
+conSum = pd.DataFrame()
 rate=2.0
 
 if os.path.isfile(fname):
@@ -61,7 +61,10 @@ for price in (curr_price-100,curr_price,curr_price+100):
     result['putHedge']=result['Put']*result['putDelta']*100
     result['netHedge']=result['callHedge']+result['putHedge']
     sumByExpiry=result[['Expiry','callHedge','putHedge','netHedge']].groupby('Expiry').sum()
-    sumByExpiry.to_csv(fname+':'+str(price),header=True)
+    sumByExpiry['Price']=price
+    conSum=conSum.append(sumByExpiry)
+    
+conSum.to_csv(fname+':summary.csv',header=True)
 
 
 
