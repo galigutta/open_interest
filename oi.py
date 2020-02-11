@@ -89,7 +89,7 @@ conSum.to_csv(fname+':summary.csv',header=True)
 
 pivtable = pd.pivot_table(conSum,values=['netHedge'],index=['Expiry'], columns=['Price'], aggfunc=np.sum)
 
-print('Hedge impact from a '+str(delta)+' point move')
+#print('Hedge impact from a '+str(delta)+' point move')
 print("Down: "+"{:,d}".format(int(pivtable.sum(axis=0)[0]-pivtable.sum(axis=0)[1])))
 print("Up  :  "+"{:,d}".format(int(pivtable.sum(axis=0)[2]-pivtable.sum(axis=0)[1])))
 
