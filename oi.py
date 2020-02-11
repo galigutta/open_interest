@@ -41,7 +41,7 @@ except:
         print('usage: python oi.py price volatility step')
 
 if os.path.isfile(fname):
-    print ("Open interest file exists, skipping download")
+    print (" ")
 else:
     print ("Downloading open interest file")
     wget.download(url,out=fname)
