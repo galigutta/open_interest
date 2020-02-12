@@ -11,7 +11,7 @@ import numpy as np
 import wget, sys
 from datetime import date,datetime
 import os.path
-import mibian
+import mibian,boto3
 import warnings,copy
 warnings.filterwarnings("ignore")
 
@@ -111,9 +111,28 @@ pivtable['key']=[0]
 summary_output=pd.merge(summary_output,pivtable,on='key')
 summary_output.drop(columns=['key'],inplace=True)
 
-summary_output.to_html('so.html',index=False,float_format="{0:,.0f}".format)
+print(summary_output)
 
+#adding code for s3 handling and static publishing
+
+s3 = boto3.client('s3')
+s3.download_file('tsla-oi', 'index.csv', 'index.csv')
+
+#read it into a dataframe
+index_csv=pd.read_csv('index.csv')
+
+#append the summary output row
+index_csv.columns = summary_output.columns
+summary_output = summary_output.append(index_csv)
+
+summary_output.to_html('index.html',index=False,float_format="{0:,.0f}".format)
 summary_output.to_csv('so.csv',index=False)
 
-#uncomment below to see data by expiry
-print(summary_output)
+#copyback the files to s3
+
+with open("index.html", "rb") as f:
+    s3.upload_fileobj(f, "tsla-oi", "index.html")
+
+with open("so.csv", "rb") as f:
+    s3.upload_fileobj(f, "tsla-oi", "index.csv")
+
