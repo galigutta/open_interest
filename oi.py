@@ -134,7 +134,7 @@ summary_output.to_csv('so.csv',index=False)
 #copyback the files to s3
 
 with open("index.html", "rb") as f:
-    s3.upload_fileobj(f, "tsla-oi", "index.html",ContentType='text/html')
+    s3.upload_fileobj(f, "tsla-oi", "index.html",ExtraArgs={'ContentType':'text/html'})
 
 with open("so.csv", "rb") as f:
     s3.upload_fileobj(f, "tsla-oi", "index.csv")
