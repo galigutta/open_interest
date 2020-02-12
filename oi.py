@@ -124,9 +124,12 @@ index_csv=pd.read_csv('index.csv')
 #append the summary output row
 index_csv.columns = summary_output.columns
 summary_output = summary_output.append(index_csv)
+#drop dpulicates
+summary_output.drop_duplicates(subset=None, keep='first', inplace=True)
 
 summary_output.to_html('index.html',index=False,float_format="{0:,.0f}".format)
 summary_output.to_csv('so.csv',index=False)
+
 
 #copyback the files to s3
 
