@@ -12,7 +12,7 @@ import wget, sys
 from datetime import date,datetime
 import os.path
 import mibian
-import warnings
+import warnings,copy
 warnings.filterwarnings("ignore")
 
 out_dir = 'snapshot'
@@ -22,9 +22,11 @@ fname = os.path.join(out_dir,date.today().strftime("%Y-%m-%d"))
 curr_price=770.0
 flatvol=85.5
 delta = 100
+deltas=[-100,-50,-20,0,20,50,100]
 
 rate=2.0
 conSum = pd.DataFrame()
+
 
 def greek_string(deets, iv):
     #array deets needs [underlyingPrice, strikePrice, interestRate, daysToExpiration]
@@ -68,7 +70,8 @@ df=df[df['Expiry']>=datetime.today()]
 df['DTE'] = df['Expiry']-datetime(datetime.today().year,datetime.today().month,datetime.today().day)
 df['DTE'] = df['DTE'].dt.days 
 
-for price in (curr_price-delta,curr_price,curr_price+delta):
+for shocks in (deltas):
+    price = shocks+curr_price
     #get all model prices and greeks
     df['Greeks']=df.apply(lambda  x:greek_string([price,x['Strike'],rate,x['DTE']],flatvol), axis=1)
     
@@ -85,13 +88,32 @@ for price in (curr_price-delta,curr_price,curr_price+delta):
     sumByExpiry['Price']=price
     conSum=conSum.append(sumByExpiry)
     
+# The 2 lines below to show impact by expiry. Useful later if the hedge impact needs to be haircut
 conSum.to_csv(fname+':summary.csv',header=True)
+pivtable_expiry = pd.pivot_table(conSum,values=['netHedge'],index=['Expiry'], columns=['Price'], aggfunc=np.sum)
 
-pivtable = pd.pivot_table(conSum,values=['netHedge'],index=['Expiry'], columns=['Price'], aggfunc=np.sum)
+#sumarize for consumption
+pivtable = pd.pivot_table(conSum,values=['netHedge'], columns=['Price'], aggfunc=np.sum)
+#calculate change in hege need
+to_subtract = copy.copy(pivtable[curr_price])
+for shocks in (deltas):
+    price = shocks+curr_price
+    pivtable[price]=pivtable[price]-to_subtract
+pivtable.columns=deltas
 
-#print('Hedge impact from a '+str(delta)+' point move')
-print("Down: "+"{:,d}".format(int(pivtable.sum(axis=0)[0]-pivtable.sum(axis=0)[1])))
-print("Up  :  "+"{:,d}".format(int(pivtable.sum(axis=0)[2]-pivtable.sum(axis=0)[1])))
+#Merge columns and output
+summary_output = pd.DataFrame()
+summary_output['Date']=[date.today().strftime("%Y-%m-%d")]
+summary_output['Price']=[curr_price]
+summary_output['IV']=[flatvol]
+summary_output['key']=[0]
+pivtable['key']=[0]
+summary_output=pd.merge(summary_output,pivtable,on='key')
+summary_output.drop(columns=['key'],inplace=True)
+
+summary_output.to_html('so.html',index=False,float_format="{0:,.0f}".format)
+
+summary_output.to_csv('so.csv',index=False)
 
 #uncomment below to see data by expiry
-#print(pivtable)
+print(summary_output)
