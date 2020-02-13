@@ -2,6 +2,8 @@ FROM ubuntu
 #You can start with any base Docker Image that works for you
 
 RUN echo "#!/bin/bash\n" > /startscript.sh
+RUN echo "apt update" > /startscript.sh
+RUN echo "apt install -y git" > /startscript.sh
 RUN echo "mkdir github\n" >> /startscript.sh
 RUN echo "cd github\n" >> /startscript.sh
 RUN echo "git clone https://github.com/galigutta/open_interest\n" >> /startscript.sh
