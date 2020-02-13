@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM python
 #You can start with any base Docker Image that works for you
 
 RUN echo "#!/bin/bash\n" > /startscript.sh
