@@ -7,7 +7,7 @@ RUN echo "apt-get update && apt-get install -y git" > /startscript.sh
 #RUN echo "mkdir github\n" >> /startscript.sh
 #RUN echo "cd github\n" >> /startscript.sh
 RUN echo "git clone https://github.com/galigutta/open_interest\n" >> /startscript.sh
-RUN echo "pip install -r requirements.txt" >> /startscript.sh
+RUN echo "pip install -r open_interest/requirements.txt" >> /startscript.sh
 RUN echo "cd *\n" >> /startscript.sh
 RUN echo "echo from start script" >> /startscript.sh
 RUN echo "ls"
