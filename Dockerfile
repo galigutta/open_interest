@@ -13,6 +13,6 @@ RUN echo "echo from start script" >> /startscript.sh
 
 RUN chmod +x /startscript.sh
 RUN /startscript.sh
-RUN cd open_interest/
+WORKDIR /open_interest
 
 CMD /bin/bash
