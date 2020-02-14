@@ -10,9 +10,9 @@ RUN echo "git clone https://github.com/galigutta/open_interest\n" >> /startscrip
 RUN echo "pip install -r open_interest/requirements.txt" >> /startscript.sh
 RUN echo "cd *\n" >> /startscript.sh
 RUN echo "echo from start script" >> /startscript.sh
-RUN echo "ls"
 
 RUN chmod +x /startscript.sh
 RUN /startscript.sh
+RUN cd open_interest/
 
 CMD /bin/bash
