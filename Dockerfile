@@ -8,6 +8,10 @@ RUN echo "pip install -r open_interest/requirements.txt" >> /startscript.sh
 
 RUN chmod +x /startscript.sh
 RUN /startscript.sh
+
+ENV TZ=America/New_York
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 WORKDIR /open_interest
 
 CMD python oi.py

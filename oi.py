@@ -18,6 +18,7 @@ warnings.filterwarnings("ignore")
 out_dir = 'snapshot'
 url = 'https://marketdata.theocc.com/series-search?symbolType=U&symbol=TSLA'
 fname = os.path.join(out_dir,date.today().strftime("%Y-%m-%d"))
+s3 = boto3.client('s3')
 
 curr_price=770.0
 flatvol=85.5
@@ -47,6 +48,10 @@ if os.path.isfile(fname):
 else:
     print ("Downloading open interest file")
     wget.download(url,out=fname)
+    print ("Copying file to S3/tsla-oi")
+    with open(fname, "rb") as f:
+        s3.upload_fileobj(f, "tsla-oi", fname)
+    
 
 print ('Using '+str(curr_price)+' price, '+str(flatvol)+' imp vol, '+str(delta)+' point move:')
 #Data wragling to clean up the raw file    
@@ -89,7 +94,10 @@ for shocks in (deltas):
     conSum=conSum.append(sumByExpiry)
     
 # The 2 lines below to show impact by expiry. Useful later if the hedge impact needs to be haircut
-conSum.to_csv(fname+':summary.csv',header=True)
+conSum.to_csv(fname+'-summary.csv',header=True)
+with open(fname+'-summary.csv', "rb") as f:
+    s3.upload_fileobj(f, "tsla-oi", "/summary"+fname+'-summary.csv')
+    
 pivtable_expiry = pd.pivot_table(conSum,values=['netHedge'],index=['Expiry'], columns=['Price'], aggfunc=np.sum)
 
 #sumarize for consumption
@@ -115,7 +123,7 @@ print(summary_output)
 
 #adding code for s3 handling and static publishing
 
-s3 = boto3.client('s3')
+
 s3.download_file('tsla-oi', 'index.csv', 'index.csv')
 
 #read it into a dataframe
