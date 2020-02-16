@@ -14,4 +14,4 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 WORKDIR /open_interest
 
-CMD ["git pull origin master",";","python oi.py"]
+CMD ["sh","-c","git pull origin master && python oi.py"]
