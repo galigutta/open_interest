@@ -52,7 +52,7 @@ else:
     
 print ("Copying file to S3/tsla-oi")
 with open(fname, "rb") as f:
-    s3.upload_fileobj(f, "tsla-oi", "/snapshot/"+datestr)
+    s3.upload_fileobj(f, "tsla-oi",'%s/%s' % ('snapshot',datestr))
     
 
 print ('Using '+str(curr_price)+' price, '+str(flatvol)+' imp vol, '+str(delta)+' point move:')
@@ -98,7 +98,7 @@ for shocks in (deltas):
 # The 2 lines below to show impact by expiry. Useful later if the hedge impact needs to be haircut
 conSum.to_csv(fname+'-summary.csv',header=True)
 with open(fname+'-summary.csv', "rb") as f:
-    s3.upload_fileobj(f, "tsla-oi", "/summary/"+datestr+'-summary.csv')
+    s3.upload_fileobj(f, "tsla-oi",'%s/%s' % ('summary',datestr+'-summary.csv'))
     
 pivtable_expiry = pd.pivot_table(conSum,values=['netHedge'],index=['Expiry'], columns=['Price'], aggfunc=np.sum)
 
