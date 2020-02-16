@@ -158,6 +158,7 @@ summary_output.drop_duplicates(subset=None, keep='first', inplace=True)
 summary_output.to_html('index.html',index=False,float_format="{0:,.0f}".format)
 fn=open("index.html","a")
 fn.write("\nLast updated at: "+datetime.today().strftime("%Y-%m-%d %H:%M:%S"))
+fn.write("\n"+requests.get('https://api.ipify.org').text)
 fn.write(err_msg)
 fn.close()
 
