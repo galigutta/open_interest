@@ -3,3 +3,7 @@ scipy
 mibian
 wget
 boto3 
+requests_html
+yahoo_fin
+requests
+lxml

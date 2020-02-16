@@ -11,7 +11,8 @@ import numpy as np
 import wget, sys
 from datetime import date,datetime
 import os.path
-import mibian,boto3
+import mibian,boto3, requests
+from yahoo_fin.stock_info import get_quote_table
 import warnings,copy
 warnings.filterwarnings("ignore")
 
@@ -20,6 +21,7 @@ url = 'https://marketdata.theocc.com/series-search?symbolType=U&symbol=TSLA'
 datestr=date.today().strftime("%Y-%m-%d")
 fname = os.path.join(out_dir,datestr)
 s3 = boto3.client('s3')
+err_msg='\n'
 
 curr_price=770.0
 flatvol=85.5
@@ -36,6 +38,22 @@ def greek_string(deets, iv):
     return([c.callPrice,c.putPrice,c.callDelta,c.putDelta,c.callDelta2,c.putDelta2,
             c.callTheta,c.putTheta,c.callRho,c.putRho,c.vega,c.gamma])
 
+try:
+    curr_price = get_quote_table("tsla")['Quote Price']
+except:
+    err_msg = err_msg+'unable to get price from yahoo & yahoo_fin, defaulting price\n'
+    
+try:
+    #scrape volatility
+    url_vol = 'https://www.ivolatility.com/options.j?ticker=tsla'
+    html = requests.get(url_vol).content
+    df_list = pd.read_html(html)
+    flat_vol = float(df_list[4][1][8].strip('%'))
+except:
+    err_msg = err_msg+'unable to get vol from ivolatility.com, defaulting vol\n'
+
+
+    
 try:
     curr_price=float(sys.argv[1])
     flatvol=float(sys.argv[2])
@@ -140,6 +158,7 @@ summary_output.drop_duplicates(subset=None, keep='first', inplace=True)
 summary_output.to_html('index.html',index=False,float_format="{0:,.0f}".format)
 fn=open("index.html","a")
 fn.write("\nLast updated at: "+datetime.today().strftime("%Y-%m-%d %H:%M:%S"))
+fn.write(err_msg)
 fn.close()
 
 summary_output.to_csv('so.csv',index=False)
