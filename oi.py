@@ -161,7 +161,7 @@ summary_output = summary_output.append(index_csv)
 #drop dpulicates
 summary_output.drop_duplicates(subset=None, keep='first', inplace=True)
 
-summary_output.to_html('index.html',index=False,float_format="{0:,.0f}".format)
+summary_output.fillna(value=0).to_html('index.html',index=False,float_format="{0:,.0f}".format)
 fn=open("index.html","a")
 fn.write("\nLast updated at: "+datetime.today().strftime("%Y-%m-%d %H:%M:%S")+ " EST")
 fn.write("<br>"+requests.get('https://api.ipify.org').text)
