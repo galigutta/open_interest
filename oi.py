@@ -39,7 +39,12 @@ def greek_string(deets, iv):
             c.callTheta,c.putTheta,c.callRho,c.putRho,c.vega,c.gamma])
 
 try:
-    curr_price = get_quote_table("tsla")['Quote Price']
+    yq = get_quote_table("tsla")
+    curr_price = yq['Quote Price']
+    now = datetime.now()
+    day_volume = 0
+    if now > now.replace(hour=16):
+        day_volume = yq['Volume']
 except:
     err_msg = err_msg+'unable to get price from yahoo & yahoo_fin, defaulting price\n'
     
@@ -133,6 +138,7 @@ pivtable.columns=deltas
 summary_output = pd.DataFrame()
 summary_output['Date']=[date.today().strftime("%Y-%m-%d")]
 summary_output['Price']=[curr_price]
+summary_output['Volume']=[day_volume]
 summary_output['IV']=[flatvol]
 summary_output['key']=[0]
 pivtable['key']=[0]
