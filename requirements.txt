@@ -7,3 +7,4 @@ requests_html
 yahoo_fin
 requests
 lxml
+pandas_market_calendars

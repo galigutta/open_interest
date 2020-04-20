@@ -14,6 +14,7 @@ import os.path
 import mibian,boto3, requests
 from yahoo_fin.stock_info import get_quote_table
 import warnings,copy
+import pandas_market_calendars as mcal
 warnings.filterwarnings("ignore")
 
 out_dir = 'snapshot'
@@ -27,7 +28,7 @@ curr_price=770.0
 flatvol=85.5
 delta = 100
 deltas=[-100,-50,-20,0,20,50,100]
-
+nyse = mcal.get_calendar('NYSE')
 rate=2.0
 conSum = pd.DataFrame()
 
@@ -43,7 +44,7 @@ try:
     curr_price = yq['Quote Price']
     now = datetime.now()
     day_volume = 0
-    if now > now.replace(hour=16):
+    if (now > now.replace(hour=16) and nyse.valid_days(start_date=datestr, end_date=datestr).size==1):
         day_volume = yq['Volume']
 except:
     err_msg = err_msg+'unable to get price from yahoo & yahoo_fin, defaulting price\n'
