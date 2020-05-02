@@ -162,12 +162,21 @@ summary_output = summary_output.append(index_csv)
 #drop dpulicates
 summary_output.drop_duplicates(subset=None, keep='first', inplace=True)
 
-summary_output.fillna(value=0).to_html('index.html',index=False,float_format="{0:,.0f}".format)
-fn=open("index.html","a")
-fn.write("\nLast updated at: "+datetime.today().strftime("%Y-%m-%d %H:%M:%S")+ " EST")
-fn.write("<br>"+requests.get('https://api.ipify.org').text)
-fn.write(err_msg)
-fn.close()
+# summary_output.fillna(value=0).to_html('index.html',index=False,float_format="{0:,.0f}".format)
+# fn=open("index.html","a")
+# fn.write("\nLast updated at: "+datetime.today().strftime("%Y-%m-%d %H:%M:%S")+ " EST")
+# fn.write("<br>"+requests.get('https://api.ipify.org').text)
+# fn.write(err_msg)
+# fn.close()
+with open("index.html", 'w') as fn:
+    fn.write("Last updated at: "+datetime.today().strftime("%Y-%m-%d %H:%M:%S")+ " EST")
+    fn.close()
+with open("index.html", 'a') as fn:
+    fn.write('<br>'+pivtable_expiry.fillna(value=0).to_html(float_format="{0:,.0f}".format))
+    fn.write('<br>'+summary_output.fillna(value=0).to_html(index=False,float_format="{0:,.0f}".format))
+    fn.write("<br>"+requests.get('https://api.ipify.org').text)
+    fn.write(err_msg)
+    fn.close()
 
 summary_output.to_csv('so.csv',index=False)
 
