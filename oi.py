@@ -73,11 +73,6 @@ if os.path.isfile(fname):
 else:
     print ("Downloading open interest file")
     wget.download(url,out=fname)
-    
-print ("Copying file to S3/tsla-oi")
-with open(fname, "rb") as f:
-    s3.upload_fileobj(f, "tsla-oi",'%s/%s' % ('snapshot',datestr))
-    
 
 print ('Using '+str(curr_price)+' price, '+str(flatvol)+' imp vol, '+str(delta)+' point move:')
 #Data wragling to clean up the raw file    
@@ -93,6 +88,15 @@ df['Expiry'] = df['Expiry'] + pd.DateOffset(days=1)
 
 df.drop(columns=['Dec','year','Month','Day'],inplace=True)
 #Done data wrangling
+
+    
+print ("Copying file to S3/tsla-oi")
+df['Date']=datestr
+df.to_csv(fname,header=True,index=False)
+with open(fname, "rb") as f:
+    s3.upload_fileobj(f, "tsla-oi",'%s/%s' % ('snapshot',datestr+'.csv'))
+df.drop(columns=['Date'],inplace=True)
+#done copying file to S3
 
 #retain rows for dates >= today()
 df=df[df['Expiry']>=datetime.today()]
