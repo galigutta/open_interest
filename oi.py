@@ -130,7 +130,7 @@ with open(fname+'-summary.csv', "rb") as f:
     s3.upload_fileobj(f, "tsla-oi",'%s/%s' % ('summary',datestr+'-summary.csv'))
     
 #round prices for better display
-pivtable_expiry = pd.pivot_table(conSum.round(0),values=['netHedge'],index=['Expiry'], columns=['Price'], aggfunc=np.sum)
+pivtable_expiry = pd.pivot_table(conSum.round(1),values=['netHedge'],index=['Expiry'], columns=['Price'], aggfunc=np.sum)
 
 #sumarize for consumption
 pivtable = pd.pivot_table(conSum,values=['netHedge'], columns=['Price'], aggfunc=np.sum)
