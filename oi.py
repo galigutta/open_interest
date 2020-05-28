@@ -136,7 +136,8 @@ pivtable = pd.pivot_table(conSum,values=['netHedge'], columns=['Price'], aggfunc
 to_subtract = copy.copy(pivtable[curr_price])
 for shocks in (deltas):
     price = shocks+curr_price
-    pivtable[price]=pivtable[price]-to_subtract
+    if (shocks!=0):
+        pivtable[price]=pivtable[price]-to_subtract
 pivtable.columns=deltas
 
 #Merge columns and output
