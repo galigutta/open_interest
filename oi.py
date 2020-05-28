@@ -130,7 +130,8 @@ with open(fname+'-summary.csv', "rb") as f:
     
 pivtable_expiry = pd.pivot_table(conSum,values=['netHedge'],index=['Expiry'], columns=['Price'], aggfunc=np.sum)
 #round the column names to be more legible
-pivtable_expiry.columns = list(np.around(np.array(pivtable_expiry.columns),0))
+#pivtable_expiry.columns = list(np.around(np.array(pivtable_expiry.columns),0))
+print(pivtable_expiry.columns)
 #sumarize for consumption
 pivtable = pd.pivot_table(conSum,values=['netHedge'], columns=['Price'], aggfunc=np.sum)
 #calculate change in hege need
