@@ -125,13 +125,14 @@ for shocks in (deltas):
     
 # The 2 lines below to show impact by expiry. Useful later if the hedge impact needs to be haircut
 conSum.to_csv(fname+'-summary.csv',header=True)
+
 with open(fname+'-summary.csv', "rb") as f:
     s3.upload_fileobj(f, "tsla-oi",'%s/%s' % ('summary',datestr+'-summary.csv'))
     
+#round prices for better display
+conSum.Price = conSum.Price.round()
 pivtable_expiry = pd.pivot_table(conSum,values=['netHedge'],index=['Expiry'], columns=['Price'], aggfunc=np.sum)
-#round the column names to be more legible
-#pivtable_expiry.columns = list(np.around(np.array(pivtable_expiry.columns),0))
-print(pivtable_expiry.columns)
+
 #sumarize for consumption
 pivtable = pd.pivot_table(conSum,values=['netHedge'], columns=['Price'], aggfunc=np.sum)
 #calculate change in hege need
