@@ -18,9 +18,9 @@ import pandas_market_calendars as mcal
 warnings.filterwarnings("ignore")
 
 out_dir = 'snapshot'
-#falling back to the prodution from beta as beta is not working
-url = 'https://www.theocc.com/webapps/series-search?symbolType=U&symbol=TSLA'
-#url = 'https://marketdata.theocc.com/series-search?symbolType=U&symbol=TSLA'
+#changing to the new production data
+#url = 'https://www.theocc.com/webapps/series-search?symbolType=U&symbol=TSLA'
+url = 'https://marketdata.theocc.com/series-search?symbolType=U&symbol=TSLA'
 datestr=date.today().strftime("%Y-%m-%d")
 fname = os.path.join(out_dir,datestr)
 s3 = boto3.client('s3')
