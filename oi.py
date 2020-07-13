@@ -179,7 +179,7 @@ summary_output.drop_duplicates(subset=None, keep='first', inplace=True)
 # fn.close()
 with open("index.html", 'w') as fn:
     fn.write("Last updated at: "+datetime.today().strftime("%Y-%m-%d %H:%M:%S")+ " EST")
-    fn.write("sensitivity ranges doubled to be +/-200 points wide from 2020-07-13")
+    fn.write("<br>Sensitivity ranges doubled to be +/-200 points wide from 2020-07-13. Previously +/-100")
     fn.close()
 with open("index.html", 'a') as fn:
     fn.write('<br>'+pivtable_expiry.fillna(value=0).to_html(float_format="{0:,.0f}".format))
