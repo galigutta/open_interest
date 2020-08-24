@@ -178,8 +178,8 @@ summary_output.drop_duplicates(subset=None, keep='first', inplace=True)
 # fn.write(err_msg)
 # fn.close()
 with open("index.html", 'w') as fn:
-    fn.write("by @generalenthu")
-    fn.write("Last updated at: "+datetime.today().strftime("%Y-%m-%d %H:%M:%S")+ " EST")
+    fn.write("By @generalenthu")
+    fn.write("<br>Last updated at: "+datetime.today().strftime("%Y-%m-%d %H:%M:%S")+ " EST")
     fn.write("<br>Sensitivity ranges doubled to be +/-200 points wide from 2020-07-13. Previously +/-100")
     fn.close()
 with open("index.html", 'a') as fn:
