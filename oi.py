@@ -29,7 +29,7 @@ err_msg='\n'
 curr_price=770.0
 flatvol=85.5
 delta = 100
-deltas=[-200,-100,-40,0,40,100,200]
+deltas=[-100,-50,-20,0,20,50,100]
 nyse = mcal.get_calendar('NYSE')
 rate=2.0
 conSum = pd.DataFrame()
@@ -180,7 +180,7 @@ summary_output.drop_duplicates(subset=None, keep='first', inplace=True)
 with open("index.html", 'w') as fn:
     fn.write("By @generalenthu")
     fn.write("<br>Last updated at: "+datetime.today().strftime("%Y-%m-%d %H:%M:%S")+ " EST")
-    fn.write("<br>Sensitivity ranges doubled to be +/-200 points wide from 2020-07-13. Previously +/-100")
+    fn.write("<br>Sensitivity ranges set to be +/-100 points wide post split. Previously +/-200")
     fn.close()
 with open("index.html", 'a') as fn:
     fn.write('<br>'+pivtable_expiry.fillna(value=0).to_html(float_format="{0:,.0f}".format))
