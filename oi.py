@@ -180,7 +180,7 @@ summary_output.drop_duplicates(subset=None, keep='first', inplace=True)
 with open("index.html", 'w') as fn:
     fn.write("By @generalenthu")
     fn.write("<br>Last updated at: "+datetime.today().strftime("%Y-%m-%d %H:%M:%S")+ " EST")
-    fn.write("<br>Sensitivity ranges set to be +/-100 points wide post split. Previously +/-200")
+    fn.write("<br>Adjusted historical data for split")
     fn.close()
 with open("index.html", 'a') as fn:
     fn.write('<br>'+pivtable_expiry.fillna(value=0).to_html(float_format="{0:,.0f}".format))
