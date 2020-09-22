@@ -56,7 +56,7 @@ try:
     url_vol = 'https://www.ivolatility.com/options.j?ticker=tsla'
     html = requests.get(url_vol).content
     df_list = pd.read_html(html)
-    flatvol = float(df_list[4][1][8].strip('%'))
+    flatvol = float(df_list[4][1][8].strip('%')) - 50
 except:
     err_msg = err_msg+'unable to get vol from ivolatility.com, defaulting vol\n'
 
