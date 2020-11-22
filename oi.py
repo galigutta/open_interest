@@ -53,12 +53,14 @@ except:
     
 try:
     #scrape volatility
-    url_vol = 'https://www.ivolatility.com/options.j?ticker=tsla'
+    #url_vol = 'https://www.ivolatility.com/options.j?ticker=tsla'
+    url_vol = 'https://www.alphaquery.com/stock/TSLA/volatility-option-statistics/30-day/iv-mean'
     html = requests.get(url_vol).content
     df_list = pd.read_html(html)
-    flatvol = float(df_list[4][1][8].strip('%')) 
+    #flatvol = float(df_list[4][1][8].strip('%')) # this is for ivolatility
+    flatvol = float(df_list[0][1][5]) *100
 except:
-    err_msg = err_msg+'unable to get vol from ivolatility.com, defaulting vol\n'
+    err_msg = err_msg+'unable to get vol from alphaquery, defaulting vol\n'
 
 
     
@@ -200,3 +202,4 @@ with open("index.html", "rb") as f:
 with open("so.csv", "rb") as f:
     s3.upload_fileobj(f, "tsla-oi", "index.csv")
 
+print(err_msg)
