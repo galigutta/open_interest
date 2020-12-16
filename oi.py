@@ -128,6 +128,7 @@ for shocks in (deltas):
     conSum=conSum.append(sumByExpiry)
     
 # The 2 lines below to show impact by expiry. Useful later if the hedge impact needs to be haircut
+conSum['ProcDate']=datestr
 conSum.to_csv(fname+'-summary.csv',header=True)
 
 with open(fname+'-summary.csv', "rb") as f:
