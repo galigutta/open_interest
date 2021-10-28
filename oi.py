@@ -185,6 +185,7 @@ with open("index.html", 'w') as fn:
     fn.write("By @generalenthu")
     fn.write("<br>Last updated at: "+datetime.today().strftime("%Y-%m-%d %H:%M:%S")+ " EST")
     fn.write("<br>Adjusted historical data for split")
+    fn.write("<br>Call vs Puts impact data <a href=\"https://tsla-oi.s3.amazonaws.com/summary/"+datestr+"-summary.csv\">here</a>")
     fn.close()
 with open("index.html", 'a') as fn:
     fn.write('<br>'+pivtable_expiry.fillna(value=0).to_html(float_format="{0:,.0f}".format))
