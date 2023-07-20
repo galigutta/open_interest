@@ -58,7 +58,8 @@ try:
     html = requests.get(url_vol).content
     df_list = pd.read_html(html)
     #flatvol = float(df_list[4][1][8].strip('%')) # this is for ivolatility
-    flatvol = float(df_list[0][1][5]) *100
+    inner_df = df_list[0]
+    flat_vol = float(inner_df[inner_df[0]=='Implied Volatility (Mean)'][1])*100
 except:
     err_msg = err_msg+'unable to get vol from alphaquery, defaulting vol\n'
 
