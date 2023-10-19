@@ -27,7 +27,7 @@ s3 = boto3.client('s3')
 err_msg='\n'
 
 curr_price=770.0
-flatvol=85.5
+flatvol=55
 delta = 100
 deltas=[-100,-50,-20,0,20,50,100]
 nyse = mcal.get_calendar('NYSE')
