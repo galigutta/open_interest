@@ -4,7 +4,7 @@ mibian
 wget
 boto3 
 requests_html
-yahoo_fin==0.8.9.1
+yfinance
 requests
 lxml
 pandas_market_calendars
