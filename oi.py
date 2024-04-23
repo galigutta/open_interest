@@ -127,7 +127,7 @@ for shocks in (deltas):
     result['netHedge']=result['callHedge']+result['putHedge']
     sumByExpiry=result[['Expiry','callHedge','putHedge','netHedge']].groupby('Expiry').sum()
     sumByExpiry['Price']=price
-    conSum=conSum.append(sumByExpiry)
+    conSum = pd.concat([conSum, sumByExpiry])
     
 # The 2 lines below to show impact by expiry. Useful later if the hedge impact needs to be haircut
 conSum['ProcDate'] = datestr
