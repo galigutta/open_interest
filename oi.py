@@ -173,7 +173,7 @@ index_csv=pd.read_csv('index.csv')
 
 #append the summary output row
 index_csv.columns = summary_output.columns
-summary_output = summary_output.append(index_csv)
+summary_output = pd.concat([summary_output,index_csv])
 #drop dpulicates
 summary_output.drop_duplicates(subset=None, keep='first', inplace=True)
 
