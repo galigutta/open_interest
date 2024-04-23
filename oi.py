@@ -13,7 +13,7 @@ from datetime import date,datetime
 import os.path
 import mibian,boto3, requests
 # from yahoo_fin.stock_info import get_quote_table
-import yfinance
+import yfinance as yf
 import warnings,copy
 import pandas_market_calendars as mcal
 warnings.filterwarnings("ignore")
