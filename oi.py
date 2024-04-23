@@ -12,7 +12,8 @@ import wget, sys
 from datetime import date,datetime
 import os.path
 import mibian,boto3, requests
-from yahoo_fin.stock_info import get_quote_table
+# from yahoo_fin.stock_info import get_quote_table
+import yfinance
 import warnings,copy
 import pandas_market_calendars as mcal
 warnings.filterwarnings("ignore")
@@ -42,12 +43,12 @@ def greek_string(deets, iv):
             c.callTheta,c.putTheta,c.callRho,c.putRho,c.vega,c.gamma])
 
 try:
-    yq = get_quote_table("tsla")
-    curr_price = yq['Quote Price']
+    yf_tsla = yf.Ticker("TSLA")
+    curr_price = yf_tsla.info['currentPrice']
     now = datetime.now()
     day_volume = 0
     if (now > now.replace(hour=16) and nyse.valid_days(start_date=datestr, end_date=datestr).size==1):
-        day_volume = yq['Volume']
+        day_volume = yf_tsla.info['volume']
 except:
     err_msg = err_msg+'unable to get price from yahoo & yahoo_fin, defaulting price\n'
     
