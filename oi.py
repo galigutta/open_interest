@@ -49,9 +49,9 @@ try:
     day_volume = 0
     if (now > now.replace(hour=16) and nyse.valid_days(start_date=datestr, end_date=datestr).size==1):
         day_volume = yf_tsla.info['volume']
-except:
+except Exception as e:
     err_msg = err_msg+'unable to get price from yahoo & yahoo_fin, defaulting price\n'
-    
+    print (e)
 try:
     #scrape volatility
     #url_vol = 'https://www.ivolatility.com/options.j?ticker=tsla'
