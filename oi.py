@@ -8,7 +8,7 @@ Created on Sun Feb  9 21:27:19 2020
 
 import pandas as pd
 import numpy as np
-import wget, sys
+import urllib.request, sys
 from datetime import date,datetime
 import os.path
 import mibian,boto3, requests
@@ -41,6 +41,17 @@ def greek_string(deets, iv):
     c=mibian.BS(deets,iv)
     return([c.callPrice,c.putPrice,c.callDelta,c.putDelta,c.callDelta2,c.putDelta2,
             c.callTheta,c.putTheta,c.callRho,c.putRho,c.vega,c.gamma])
+
+def download_with_headers(url, output_file):
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Connection': 'keep-alive',
+    }
+    req = urllib.request.Request(url, headers=headers)
+    with urllib.request.urlopen(req) as response, open(output_file, 'wb') as out_file:
+        out_file.write(response.read())
 
 try:
     yf_tsla = yf.Ticker("TSLA")
@@ -78,7 +89,11 @@ if os.path.isfile(fname):
     print (" ")
 else:
     print ("Downloading open interest file")
-    wget.download(url,out=fname)
+    try:
+        download_with_headers(url, fname)
+    except Exception as e:
+        print(f"Error downloading file: {str(e)}")
+        err_msg += f'Error downloading open interest file: {str(e)}\n'
 
 print ('Using '+str(curr_price)+' price, '+str(flatvol)+' imp vol, '+str(delta)+' point move:')
 #Data wragling to clean up the raw file    
