@@ -67,13 +67,20 @@ try:
     #scrape volatility
     #url_vol = 'https://www.ivolatility.com/options.j?ticker=tsla'
     url_vol = 'https://www.alphaquery.com/stock/TSLA/volatility-option-statistics/30-day/iv-mean'
-    html = requests.get(url_vol).content
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Connection': 'keep-alive',
+        'Referer': 'https://www.alphaquery.com',
+    }
+    html = requests.get(url_vol, headers=headers, timeout=10).content
     df_list = pd.read_html(html)
     #flatvol = float(df_list[4][1][8].strip('%')) # this is for ivolatility
     inner_df = df_list[0]
     flatvol = float(inner_df[inner_df[0]=='Implied Volatility (Mean)'][1])*100
-except:
-    err_msg = err_msg+'unable to get vol from alphaquery, defaulting vol\n'
+except Exception as e:
+    err_msg = err_msg+f'unable to get vol from alphaquery, defaulting vol: {str(e)}\n'
 
 
     
