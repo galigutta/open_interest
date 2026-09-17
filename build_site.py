@@ -14,8 +14,8 @@ from pathlib import Path
 import pandas as pd
 
 DEFAULT_WATCHLIST = [
-    "TSLA", "NVDA", "AAPL", "AMZN", "META", "GOOGL", "MSFT",
-    "AMD", "NFLX", "SPCX",
+    "NVDA", "TSLA", "AAPL", "MSFT", "AMZN", "META",
+    "AMD", "MU", "INTC", "NFLX", "SPCX",
 ]
 
 CSS = """

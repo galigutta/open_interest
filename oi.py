@@ -47,7 +47,6 @@ DEFAULT_BUCKETS = {
     "SPCX": "spcx-oi",
 }
 DEFAULT_PRICES = {
-    "GOOGL": 170.0,
     "NVDA": 120.0,
     "TSLA": 350.0,
     "AAPL": 220.0,
@@ -61,7 +60,6 @@ DEFAULT_PRICES = {
     "SPCX": 150.0,
 }
 DEFAULT_VOLS = {
-    "GOOGL": 30.0,
     "NVDA": 45.0,
     "TSLA": 55.0,
     "AAPL": 25.0,
@@ -75,8 +73,8 @@ DEFAULT_VOLS = {
     "SPCX": 52.0,
 }
 DEFAULT_WATCHLIST = [
-    "TSLA", "NVDA", "AAPL", "AMZN", "META", "GOOGL", "MSFT",
-    "AMD", "NFLX", "SPCX",
+    "NVDA", "TSLA", "AAPL", "MSFT", "AMZN", "META",
+    "AMD", "MU", "INTC", "NFLX", "SPCX",
 ]
 
 
