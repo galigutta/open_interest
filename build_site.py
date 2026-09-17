@@ -513,7 +513,7 @@ def write_index(out_dir: Path, cards: list[dict], now_label: str, watchlist: lis
 def main():
     ap = argparse.ArgumentParser(description="Build multi-ticker OI hedge static site")
     ap.add_argument("--snapshot", default="snapshot", help="oi.py snapshot directory")
-    ap.add_argument("--out", required=True, help="Output site directory (e.g. ../spcx-oi-site)")
+    ap.add_argument("--out", required=True, help="Output site directory (e.g. ../options-oi)")
     ap.add_argument("--watchlist", default="watchlist.txt", help="Watchlist file")
     args = ap.parse_args()
 
