@@ -1,20 +1,56 @@
 {
   "description": "Single-stock options-heavy watchlist (no ETFs). Daily OCC pulls build history.",
   "tickers": [
-    {"symbol": "TSLA", "name": "Tesla"},
-    {"symbol": "NVDA", "name": "NVIDIA"},
-    {"symbol": "AAPL", "name": "Apple"},
-    {"symbol": "AMZN", "name": "Amazon"},
-    {"symbol": "META", "name": "Meta"},
-    {"symbol": "GOOGL", "name": "Alphabet"},
-    {"symbol": "MSFT", "name": "Microsoft"},
-    {"symbol": "AMD", "name": "AMD"},
-    {"symbol": "NFLX", "name": "Netflix"},
-    {"symbol": "SPCX", "name": "SpaceX"}
+    {
+      "symbol": "NVDA",
+      "name": "NVDA"
+    },
+    {
+      "symbol": "TSLA",
+      "name": "TSLA"
+    },
+    {
+      "symbol": "AAPL",
+      "name": "AAPL"
+    },
+    {
+      "symbol": "MSFT",
+      "name": "MSFT"
+    },
+    {
+      "symbol": "AMZN",
+      "name": "AMZN"
+    },
+    {
+      "symbol": "META",
+      "name": "META"
+    },
+    {
+      "symbol": "AMD",
+      "name": "AMD"
+    },
+    {
+      "symbol": "MU",
+      "name": "MU"
+    },
+    {
+      "symbol": "INTC",
+      "name": "INTC"
+    },
+    {
+      "symbol": "NFLX",
+      "name": "NFLX"
+    },
+    {
+      "symbol": "SPCX",
+      "name": "SPCX"
+    }
   ],
-  "iv_source": "AlphaQuery 30-day IV mean scrape; flat per-symbol default if scrape fails",
+  "iv_source": "AlphaQuery 30-day IV mean scrape; flat ~52% (or per-symbol DEFAULT_VOLS) if scrape fails",
+  "spot_source": "yfinance",
   "notes": [
     "OCC series-search symbolType=U (equity). No SPY/QQQ/IWM.",
+    "Canonical list: NVDA TSLA AAPL MSFT AMZN META AMD MU INTC NFLX SPCX",
     "Daily OCC pulls required for multi-day history; endpoint is point-in-time."
   ]
 }
