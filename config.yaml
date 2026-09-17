@@ -1,0 +1,12 @@
+# Single-stock watchlist (no ETFs)
+symbols:
+  - TSLA
+  - NVDA
+  - AAPL
+  - AMZN
+  - META
+  - GOOGL
+  - MSFT
+  - AMD
+  - NFLX
+  - SPCX
