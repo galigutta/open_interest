@@ -1,5 +1,6 @@
 {
   "description": "Single-stock options-heavy watchlist (no ETFs). Daily OCC pulls build history.",
+  "iv_source": "AlphaQuery 30-day IV mean scrape; flat per-symbol default if scrape fails",
   "tickers": [
     {"symbol": "TSLA", "name": "Tesla"},
     {"symbol": "NVDA", "name": "NVIDIA"},
@@ -12,9 +13,8 @@
     {"symbol": "NFLX", "name": "Netflix"},
     {"symbol": "SPCX", "name": "SpaceX"}
   ],
-  "iv_source": "AlphaQuery 30-day IV mean scrape; flat per-symbol default if scrape fails",
   "notes": [
     "OCC series-search symbolType=U (equity). No SPY/QQQ/IWM.",
-    "Daily OCC pulls required for multi-day history; endpoint is point-in-time."
+    "Daily OCC pulls required; endpoint is point-in-time."
   ]
 }

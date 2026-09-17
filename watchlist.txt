@@ -1,5 +1,4 @@
-# Single-stock options-heavy watchlist (OCC equity underlyings only; no ETFs).
-# One ticker per line; blank lines and # comments ignored.
+# Single-stock options-heavy watchlist (no ETFs).
 TSLA
 NVDA
 AAPL
