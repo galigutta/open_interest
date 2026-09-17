@@ -47,32 +47,34 @@ DEFAULT_BUCKETS = {
     "SPCX": "spcx-oi",
 }
 DEFAULT_PRICES = {
-    "TSLA": 350.0,
     "NVDA": 120.0,
+    "TSLA": 350.0,
     "AAPL": 220.0,
+    "MSFT": 420.0,
     "AMZN": 220.0,
     "META": 550.0,
-    "GOOGL": 170.0,
-    "MSFT": 420.0,
     "AMD": 150.0,
+    "MU": 100.0,
+    "INTC": 30.0,
     "NFLX": 700.0,
     "SPCX": 150.0,
 }
 DEFAULT_VOLS = {
-    "TSLA": 55.0,
     "NVDA": 45.0,
+    "TSLA": 55.0,
     "AAPL": 25.0,
+    "MSFT": 25.0,
     "AMZN": 30.0,
     "META": 35.0,
-    "GOOGL": 30.0,
-    "MSFT": 25.0,
     "AMD": 45.0,
+    "MU": 45.0,
+    "INTC": 40.0,
     "NFLX": 40.0,
     "SPCX": 52.0,
 }
 DEFAULT_WATCHLIST = [
-    "TSLA", "NVDA", "AAPL", "AMZN", "META", "GOOGL", "MSFT",
-    "AMD", "NFLX", "SPCX",
+    "NVDA", "TSLA", "AAPL", "MSFT", "AMZN", "META",
+    "AMD", "MU", "INTC", "NFLX", "SPCX",
 ]
 
 
@@ -572,7 +574,7 @@ def run_symbol(
     )
 
     df = pd.read_csv(fname, sep="\\t", engine="python", skiprows=6)
-    if df.empty or "Integer" not in df.columns and "Strike" not in df.columns:
+    if df.empty or ("Integer" not in df.columns and "Strike" not in df.columns):
         # Re-read may fail if file was already cleaned CSV from a prior run today
         try:
             df2 = pd.read_csv(fname)
@@ -580,6 +582,7 @@ def run_symbol(
                 df = df2
                 if "Date" in df.columns:
                     df = df.drop(columns=["Date"])
+                df["Expiry"] = pd.to_datetime(df["Expiry"])
             else:
                 raise ValueError("unrecognized OCC schema")
         except Exception as e:

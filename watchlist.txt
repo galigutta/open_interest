@@ -1,12 +1,12 @@
-# Single-stock options-heavy watchlist (OCC equity underlyings only; no ETFs).
-# One ticker per line; blank lines and # comments ignored.
-TSLA
+# Single-stock options-heavy watchlist (no ETFs; no GOOGL).
 NVDA
+TSLA
 AAPL
+MSFT
 AMZN
 META
-GOOGL
-MSFT
 AMD
+MU
+INTC
 NFLX
 SPCX

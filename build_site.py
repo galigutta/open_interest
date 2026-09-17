@@ -14,8 +14,8 @@ from pathlib import Path
 import pandas as pd
 
 DEFAULT_WATCHLIST = [
-    "TSLA", "NVDA", "AAPL", "AMZN", "META", "GOOGL", "MSFT",
-    "AMD", "NFLX", "SPCX",
+    "NVDA", "TSLA", "AAPL", "MSFT", "AMZN", "META",
+    "AMD", "MU", "INTC", "NFLX", "SPCX",
 ]
 
 CSS = """
@@ -28,6 +28,7 @@ CSS = """
     margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
     background: radial-gradient(1200px 600px at 10% -10%, #1a2744 0%, var(--bg) 55%);
     color: var(--text); line-height:1.45;
+    -webkit-text-size-adjust: 100%;
   }
   .wrap { max-width: 1100px; margin: 0 auto; padding: 32px 20px 64px; }
   h1 { font-size: 1.6rem; margin: 0 0 8px; }
@@ -36,6 +37,7 @@ CSS = """
   .card {
     background: var(--card); border:1px solid var(--line); border-radius:14px;
     padding:18px 18px 8px; margin-bottom:22px; overflow-x:auto;
+    -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain;
   }
   .badge {
     display:inline-block; background:#1e3158; color:var(--accent);
@@ -54,11 +56,34 @@ CSS = """
   .symcard {
     display:block; padding:14px 16px; border-radius:12px; border:1px solid var(--line);
     background:#0e1626; text-decoration:none; color:var(--text);
+    min-height: 56px;
   }
   .symcard:hover { border-color: var(--accent); }
   .symcard .t { font-weight:700; font-size:1.05rem; }
   .symcard .s { color:var(--muted); font-size:0.85rem; margin-top:4px; }
   .muted { color: var(--muted); }
+  .back { display:inline-flex; align-items:center; min-height:44px; padding:6px 0; text-decoration:none; }
+  .scroll-hint { display:none; color:var(--muted); font-size:0.85rem; margin:0 0 8px; }
+  @media (max-width: 720px) {
+    .wrap { padding: 16px 12px calc(40px + env(safe-area-inset-bottom, 0px)); }
+    h1 { font-size: 1.35rem; }
+    h2 { font-size: 1.05rem; }
+    .meta { font-size: 0.9rem; margin-bottom: 14px; }
+    .card { padding: 14px 10px 6px; border-radius: 12px; margin-bottom: 16px; }
+    .symgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap:10px; }
+    .symcard { padding: 14px; min-height: 72px; }
+    .symcard .t { font-size: 1.12rem; }
+    th, td { padding: 8px 10px; font-size: 0.88rem; }
+    .scroll-hint { display:block; }
+    .badge { margin-bottom: 6px; }
+  }
+  @media (max-width: 380px) {
+    .symgrid { grid-template-columns: 1fr; }
+  }
+  @media (hover: none) {
+    .symcard:active { border-color: var(--accent); background:#152038; }
+    tbody tr:hover { background: transparent; }
+  }
 """
 
 
