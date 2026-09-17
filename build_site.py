@@ -48,6 +48,13 @@ CSS = """
   th, td { padding: 10px 12px; border-bottom:1px solid var(--line); text-align:right; white-space:nowrap; }
   th:first-child, td:first-child { text-align:left; }
   thead th { color: var(--muted); font-weight:600; font-size:0.85rem; }
+  /* Keep labels visible while scrolling wide tables on phones */
+  .card table { border-collapse: separate; border-spacing: 0; }
+  thead th { position: sticky; top: 0; background: var(--card); z-index: 2; }
+  th:first-child, td:first-child {
+    position: sticky; left: 0; background: var(--card); z-index: 1;
+  }
+  thead th:first-child { z-index: 3; }
   tbody tr:hover { background: rgba(110,168,254,0.06); }
   .note { color: var(--muted); font-size: 0.95rem; }
   a { color: var(--accent); }
@@ -63,6 +70,8 @@ CSS = """
   .symcard .s { color:var(--muted); font-size:0.85rem; margin-top:4px; }
   .muted { color: var(--muted); }
   .back { display:inline-flex; align-items:center; min-height:44px; padding:6px 0; text-decoration:none; }
+  .num-pos { color: var(--pos); }
+  .num-neg { color: var(--neg); }
   .scroll-hint { display:none; color:var(--muted); font-size:0.85rem; margin:0 0 8px; }
   @media (max-width: 720px) {
     .wrap { padding: 16px 12px calc(40px + env(safe-area-inset-bottom, 0px)); }
@@ -201,13 +210,13 @@ def write_symbol_page(out_dir: Path, symbol: str, index_csv: Path, snap_html: Pa
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <title>{html.escape(symbol)} — Options OI hedge table</title>
 <style>{CSS}</style>
 </head>
 <body>
   <div class="wrap">
-    <p class="meta"><a href="../../index.html">← All symbols</a></p>
+    <p class="meta"><a class="back" href="../../index.html">← All symbols</a></p>
     <h1>{html.escape(symbol)} open interest hedge table</h1>
     <div class="meta">
       <span class="badge">{days} trading day(s) with OCC OI</span>
@@ -217,6 +226,7 @@ def write_symbol_page(out_dir: Path, symbol: str, index_csv: Path, snap_html: Pa
       <h2>Historical summary (net hedge shares by price shock)</h2>
       <p class="note">Columns like <code>-100 … +100</code> are net dealer-style hedge share changes vs the spot shock ladder.
       OI from OCC; <strong>spot from yfinance</strong>; <strong>IV from AlphaQuery 30-day IV mean</strong> (flat ~52% fallback if scrape fails).</p>
+      <p class="scroll-hint">Swipe sideways to see all shock columns →</p>
       {hist_html}
     </div>
     <div class="card">
@@ -259,7 +269,7 @@ def write_index(out_dir: Path, cards: list[dict], now_label: str, watchlist: lis
 <html lang="en"><head><meta charset="utf-8"/><title>{s} — pending</title>
 <style>{CSS}</style></head>
 <body><div class="wrap">
-<p class="meta"><a href="../../index.html">← All symbols</a></p>
+<p class="meta"><a class="back" href="../../index.html">← All symbols</a></p>
 <h1>{s}</h1>
 <p class="note">No OCC snapshot yet. Run <code>python oi.py {s}</code> then rebuild the site.</p>
 </div></body></html>
@@ -282,7 +292,7 @@ def write_index(out_dir: Path, cards: list[dict], now_label: str, watchlist: lis
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <title>Options OI hedge tables</title>
 <style>{CSS}</style>
 </head>
