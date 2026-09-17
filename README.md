@@ -1,8 +1,8 @@
 # open_interest
 
-Builds an open-interest hedge table (call/put delta-hedge shares by expiry under price shocks) from OCC series data, Black–Scholes greeks (mibian), spot from yfinance, and 30-day IV mean from alphaquery.
+Builds an open-interest hedge table (call/put delta-hedge shares by expiry under price shocks) from OCC series data, Black–Scholes greeks (mibian), spot from yfinance, and **30-day IV mean from AlphaQuery** (flat per-symbol fallback if the scrape fails).
 
-Originally hardcoded for **TSLA**; the CLI now accepts any OCC underlying symbol (validated for **SPCX** / SpaceX).
+Works for **OCC equity underlyings** (`symbolType=U`). Default watchlist is **single-stock only** (no SPY/QQQ/IWM).
 
 ## Setup
 
@@ -15,68 +15,58 @@ pip install -r requirements.txt
 ## Usage
 
 ```text
-python oi.py [SYMBOL] [price] [vol] [step]
+python oi.py [SYMBOL ...] [--price P] [--vol V] [--step S]
+python oi.py --watchlist
+python oi.py --watchlist-file watchlist.txt
+python oi.py --config config.yaml
 ```
 
-| Arg | Default | Notes |
-|-----|---------|--------|
-| `SYMBOL` | `TSLA` | OCC / yfinance / alphaquery ticker (e.g. `SPCX`) |
-| `price` | from yfinance (else built-in default) | Spot override |
-| `vol` | from alphaquery 30-day IV mean (else default) | IV in **percent** (e.g. `52` = 52%) |
-| `step` | `100` | Price-shock magnitude; shocks are `±step, ±step/2, ±step/5, 0` |
+| Arg / flag | Default | Notes |
+|------------|---------|--------|
+| `SYMBOL …` | `TSLA` | One or more OCC / Yahoo tickers |
+| `--watchlist` / `-w` | | Run `watchlist.txt`, else `config.yaml`, else built-in list |
+| `--watchlist-file PATH` | | Explicit ticker list file |
+| `--config PATH` | | YAML with `symbols:` / `watchlist:` |
+| `--price` / `--vol` / `--step` | live feeds / `100` | Overrides (also legacy: `python oi.py 350 55 100` → TSLA) |
 
-### Tesla (default / backward compatible)
-
-```bash
-python oi.py
-python oi.py 350 55 100          # legacy: price vol step (implies TSLA)
-python oi.py TSLA 350 55 50
-```
-
-### SpaceX (SPCX)
+### Examples
 
 ```bash
+python oi.py                          # TSLA
 python oi.py SPCX
-python oi.py SPCX 151 52 50      # override spot, IV%, shock step
+python oi.py TSLA NVDA AAPL
+python oi.py --watchlist              # all single-stock names in watchlist.txt
+python oi.py SPCX 151 52 50           # symbol + price + IV% + step
 ```
 
-Local outputs land under `snapshot/`:
+### Default watchlist (single-stock)
+
+`TSLA NVDA AAPL AMZN META GOOGL MSFT AMD NFLX SPCX`
+
+Edit `watchlist.txt` or `config.yaml` to add names (OCC equity series required).
+
+### Local outputs (`snapshot/`)
 
 - `snapshot/{SYMBOL}-{YYYY-MM-DD}` — cleaned OCC OI CSV
 - `snapshot/{SYMBOL}-{YYYY-MM-DD}-summary.csv` — hedge by expiry × shock
 - `snapshot/{SYMBOL}-index.html` — HTML hedge table
-- `snapshot/{SYMBOL}-so.csv` / `snapshot/{SYMBOL}-index.csv` — rolling summary rows
+- `snapshot/{SYMBOL}-index.csv` / `*-so.csv` — rolling daily summary rows
 
-For `TSLA` only, root `index.html` / `so.csv` / `index.csv` are also written (legacy S3 static site layout).
+For `TSLA` only, root `index.html` / `so.csv` / `index.csv` are also written (legacy S3 layout).
+
+## Data sources & history
+
+1. **OCC open interest** — `https://marketdata.theocc.com/series-search?symbolType=U&symbol={SYMBOL}` (browser User-Agent). Point-in-time only; **daily runs** are required to accumulate ~30-day hedge history in `*-index.csv`.
+2. **Spot** — yfinance.
+3. **IV** — **AlphaQuery** `https://www.alphaquery.com/stock/{SYMBOL}/volatility-option-statistics/30-day/iv-mean` (30-day IV mean scrape). If HTTP/parse fails, uses a **flat** per-symbol default from `DEFAULT_VOLS` (else ~52) and logs the failure.
+
+ETFs (SPY/QQQ/IWM/etc.) are intentionally **out of scope** for the default watchlist (single-stock only).
+
 
 ## S3 (optional)
 
-Uploads/downloads are skipped gracefully when AWS credentials are missing so local snapshots still work.
+Skipped when AWS credentials are missing. `OI_S3_BUCKET` or `OI_S3_BUCKET_TEMPLATE` override per-symbol defaults (`tsla-oi`, `spcx-oi`, else `{symbol}-oi`).
 
-| Env | Default |
-|-----|---------|
-| `OI_S3_BUCKET` | `tsla-oi` for TSLA, `spcx-oi` for SPCX, else `{symbol}-oi` |
+## Docker
 
-Objects written when credentials + bucket exist:
-
-- `snapshot/{date}.csv`
-- `summary/{date}-summary.csv`
-- `index.html`, `index.csv`
-
-Create the SPCX bucket (e.g. `spcx-oi`) in your AWS account before enabling uploads.
-
-## Data sources
-
-1. **OCC open interest** — `https://marketdata.theocc.com/series-search?symbolType=U&symbol={SYMBOL}` (browser User-Agent). SPCX series data is available from OCC.
-2. **Spot** — yfinance (`fast_info` / recent history / `info`).
-3. **IV** — alphaquery `.../stock/{SYMBOL}/volatility-option-statistics/30-day/iv-mean`. If the page cannot be parsed, a flat default is used and logged (`TSLA` 55, `SPCX` 52).
-
-## Docker / ECR
-
-See `Dockerfile`. Container `CMD` still defaults to `python oi.py` (TSLA). To run SPCX in the image:
-
-```bash
-python oi.py SPCX
-```
-
-Rebuild the image with `--no-cache` after changing `requirements.txt`.
+`Dockerfile` `CMD` defaults to `python oi.py` (TSLA). For the watchlist: `python oi.py --watchlist`.
