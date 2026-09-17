@@ -212,18 +212,37 @@ def shock_value(col) -> float | None:
         return None
 
 
+def dedupe_history(df: pd.DataFrame) -> pd.DataFrame:
+    """One row per calendar Date; prefer the most-complete row for that date."""
+    if df is None or df.empty or "Date" not in df.columns:
+        return df if df is not None else pd.DataFrame()
+    d = df.copy()
+    for c in d.columns:
+        if d[c].dtype == object:
+            d[c] = d[c].replace(r"^\s*$", pd.NA, regex=True)
+    d["_filled"] = d.notna().sum(axis=1)
+    if "Volume" in d.columns:
+        d["_vol"] = pd.to_numeric(d["Volume"], errors="coerce").fillna(-1)
+    else:
+        d["_vol"] = -1
+    d["_ord"] = range(len(d))
+    d = d.sort_values(
+        ["Date", "_filled", "_vol", "_ord"],
+        ascending=[True, False, False, True],
+        kind="stable",
+    )
+    out = d.drop_duplicates(subset=["Date"], keep="first")
+    out = out.drop(columns=["_filled", "_vol", "_ord"])
+    out = out.sort_values("Date", ascending=False, kind="stable").reset_index(drop=True)
+    return out[df.columns]
+
+
 def latest_row(df: pd.DataFrame) -> pd.Series | None:
     """Most recent row; among same-date rows prefer the one with the most filled values."""
-    if df is None or df.empty:
+    d = dedupe_history(df) if df is not None and not df.empty and "Date" in df.columns else df
+    if d is None or d.empty:
         return None
-    d = df.copy()
-    d["_filled"] = d.notna().sum(axis=1)
-    if "Date" in d.columns:
-        d["_d"] = pd.to_datetime(d["Date"], errors="coerce")
-        d = d.sort_values(["_d", "_filled"], ascending=False, kind="stable")
-    else:
-        d = d.sort_values("_filled", ascending=False, kind="stable")
-    return d.iloc[0].drop(labels=[c for c in ("_d", "_filled") if c in d.columns])
+    return d.iloc[0]
 
 
 def wrap_table(table_html: str) -> str:
@@ -334,8 +353,11 @@ def write_symbol_page(out_dir: Path, symbol: str, index_csv: Path, snap_html: Pa
     sym_dir = out_dir / "symbols" / symbol
     sym_dir.mkdir(parents=True, exist_ok=True)
     df = pd.read_csv(index_csv) if index_csv.is_file() else pd.DataFrame()
-    # Copy artifacts
-    if index_csv.is_file():
+    df = dedupe_history(df)
+    # Copy artifacts (write deduped history so Pages never shows same-day duplicates)
+    if not df.empty:
+        df.to_csv(sym_dir / "index.csv", index=False)
+    elif index_csv.is_file():
         shutil.copy2(index_csv, sym_dir / "index.csv")
     # Copy latest summary / oi if present next to index
     snap = index_csv.parent
@@ -527,7 +549,10 @@ def main():
     # Preserve legacy root CSV copies for SPCX if present (gh-pages consumers)
     spcx_csv = snapshot / "SPCX-index.csv"
     if spcx_csv.is_file():
-        shutil.copy2(spcx_csv, out_dir / "index.csv")
+        try:
+            dedupe_history(pd.read_csv(spcx_csv)).to_csv(out_dir / "index.csv", index=False)
+        except Exception:
+            shutil.copy2(spcx_csv, out_dir / "index.csv")
     print(f"Wrote site to {out_dir} ({len(cards)} symbol page(s) with data)")
 
 
