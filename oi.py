@@ -520,6 +520,37 @@ def s3_download(s3, bucket, key, local_path, err_log: list):
         return False
 
 
+
+def _dedupe_history_by_date(df: pd.DataFrame) -> pd.DataFrame:
+    """Keep one history row per calendar Date.
+
+    Prefer the most-complete row (most non-null cells). Ties: higher Volume, then
+    first occurrence (oi.py prepends today's row, so first = newest).
+    """
+    if df is None or df.empty or "Date" not in df.columns:
+        return df
+    d = df.copy()
+    for c in d.columns:
+        if d[c].dtype == object:
+            d[c] = d[c].replace(r"^\s*$", pd.NA, regex=True)
+    d["_filled"] = d.notna().sum(axis=1)
+    if "Volume" in d.columns:
+        d["_vol"] = pd.to_numeric(d["Volume"], errors="coerce").fillna(-1)
+    else:
+        d["_vol"] = -1
+    d["_ord"] = range(len(d))
+    d = d.sort_values(
+        ["Date", "_filled", "_vol", "_ord"],
+        ascending=[True, False, False, True],
+        kind="stable",
+    )
+    out = d.drop_duplicates(subset=["Date"], keep="first")
+    out = out.drop(columns=["_filled", "_vol", "_ord"])
+    # Newest dates first (matches prior prepend ordering)
+    out = out.sort_values("Date", ascending=False, kind="stable").reset_index(drop=True)
+    return out[df.columns]
+
+
 def run_symbol(
     symbol: str,
     price_override=None,
@@ -709,7 +740,10 @@ def run_symbol(
             err_log.append(f"could not read local index csv: {e}")
 
     combined = pd.concat([summary_output, index_csv], ignore_index=True)
-    combined.drop_duplicates(subset=None, keep="first", inplace=True)
+    # Same-day re-runs often differ (e.g. empty hedge cols vs full, Volume 0 vs filled).
+    # Exact-row drop_duplicates keeps all of those; keep one row per Date, preferring
+    # the most-complete row (most non-null cells), then higher Volume, then newest.
+    combined = _dedupe_history_by_date(combined)
 
     summary_link = (
         f"https://{s3_bucket}.s3.amazonaws.com/summary/{DATESTR}-summary.csv"

@@ -55,7 +55,7 @@ Batch mode isolates failures: one bad symbol logs `FAILED` and the rest continue
 2. Add the ticker to `watchlist.txt` (or `config.yaml` / `tickers.json`).
 3. Run `python oi.py YOURTICKER` (or `--watchlist`).
 4. Optional S3: `OI_S3_BUCKET_TEMPLATE="{symbol}-oi"` (skipped without AWS creds).
-5. Rebuild the static dashboard: `python build_site.py --out ../spcx-oi-site`
+5. Rebuild the static dashboard: `python build_site.py --out ../options-oi`
 
 ### Local outputs (`snapshot/`)
 
@@ -81,10 +81,11 @@ Skipped when AWS credentials are missing. Per-symbol bucket defaults to `{symbol
 ## Static site
 
 ```bash
-python build_site.py --out /path/to/spcx-oi-site
+python build_site.py --out /path/to/options-oi
 ```
 
-Generates a multi-ticker **Options OI hedge tables** dashboard (symbol index + per-symbol pages). See [galigutta/spcx-oi-site](https://github.com/galigutta/spcx-oi-site).
+Generates a multi-ticker **Options OI hedge tables** dashboard (symbol index + per-symbol pages).
+Public site: [https://galigutta.github.io/options-oi/](https://galigutta.github.io/options-oi/) · repo [galigutta/options-oi](https://github.com/galigutta/options-oi).
 
 ## Docker
 
