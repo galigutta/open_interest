@@ -84,7 +84,8 @@ Skipped when AWS credentials are missing. Per-symbol bucket defaults to `{symbol
 python build_site.py --out /path/to/options-oi
 ```
 
-Generates a multi-ticker **Options OI hedge tables** dashboard (symbol index + per-symbol pages). See [galigutta/options-oi](https://github.com/galigutta/options-oi).
+Generates a multi-ticker **Options OI hedge tables** dashboard (symbol index + per-symbol pages).
+Public site: [https://galigutta.github.io/options-oi/](https://galigutta.github.io/options-oi/) · repo [galigutta/options-oi](https://github.com/galigutta/options-oi).
 
 ## Docker
 
